@@ -14,38 +14,66 @@ public class DataGrabber {
 	
 public void getRuserHx(){
 	 System.out.println("Getting user status history...");
-	 
+	 String filex = idS.rootUser + "Hx.xml";
      String https_url = "https://twitter.com/statuses/user_timeline/" + idS.rootUser + ".xml?count=100&page=[1-32]";
-     URL url;
-     try {	  
-	     url = new URL(https_url);
-	     HttpsURLConnection con = (HttpsURLConnection)url.openConnection(); 
-	     con.setRequestMethod("GET");
-	     con.setReadTimeout(15*1000);
-	     
-	 	 //dump all the content into an xml file
-	 	 print_content(con);
-  
-     } 
-     catch (MalformedURLException e) {
- 	     e.printStackTrace();
-     } 
-     catch (IOException e) {
- 	     e.printStackTrace();
-     }
-       
+     makeConnection(https_url, filex);
      System.out.println("Finished downloading user status history.");
      
   }
 
-	private void print_content(HttpsURLConnection con){
-		if(con!=null){
+	public void getUserInfo(String usr){
+		 System.out.println("Getting user information...");
+		 String filex = usr + "Info.xml";
+	     String https_url = "https://api.twitter.com/1/users/show.xml?screen_name=" + usr;
+	     makeConnection(https_url, filex);
+	     System.out.println("Finished downloading user information.");
+	}
+	
+	public void getFollowers(String usr){
+		 System.out.println("Getting followers...");
+		 String filex = usr + "TempFollowers.xml";
+	     String https_url = "https://api.twitter.com/1/followers/ids.xml?cursor=-1&screen_name=" + usr;	 
+	     makeConnection(https_url, filex);  
+	     System.out.println("Finished downloading follower ids.");	
+	}
+	
+	public void getFriends(String usr){
+		 System.out.println("Getting friends...");
+		 String filex = usr + "TempFriends.xml";	 
+	     String https_url = "https://api.twitter.com/1/friends/ids.xml?cursor=-1&screen_name=" + usr;
+	     makeConnection(https_url, filex);       
+	     System.out.println("Finished downloading friend ids.");
+	}
+
+public void getFriendships(){}
+
+public void makeConnection(String https_url, String filex){
+    URL url;
+    try {	  
+	     url = new URL(https_url);
+	     HttpsURLConnection con = (HttpsURLConnection)url.openConnection(); 	     
+	 	 //dump all the content into an xml file
+	 	 print_content(con, filex);
+ 
+    } 
+    catch (MalformedURLException e) {
+	     e.printStackTrace();
+    } 
+    catch (IOException e) {
+	     e.printStackTrace();
+    }
+	
+}
+
+
+private void print_content(HttpsURLConnection con, String filex){
+	if(con!=null){
 	
 		try {			
 		   BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			  
-		      File userHx = new File("/" + idS.rootUser + "Hx.xml");
-		      PrintWriter out = new PrintWriter(idS.hoopoeData + userHx);
+		      File destFile = new File("/" + filex);
+		      PrintWriter out = new PrintWriter(idS.hoopoeData + destFile);
 
 		   	   String input;		
 			   while ((input = br.readLine()) != null){
@@ -59,11 +87,11 @@ public void getRuserHx(){
 		} 
 		catch (IOException e) {
 		   e.printStackTrace();
-		}
-	
-	}
-	
+		}	
+    }	
 }
+	
+	
 	  	
 }
    

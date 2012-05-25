@@ -6,18 +6,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 /*  Hoopoe is a utility I'm building to work with a data visualization 
  *  application for twitter. This utility takes a single twitter user and scrapes 
- *  a tree of relational content with the user as the root node. 
- *  My first iteration of Hoopoe is not pure Java; rather I'm using Java to connect
- *  to the Unix cURL command to get data along with the twitter api. I will build 
- *  a pure java version of Hoopoe eventually, and even integrate it with the data viz 
- *  app, but for now, I just need automation to handle the data and build a model for the 
- *  the viz app. Java is used for the parser and I/O between MySQL and the data sources.  
- * 
+ *  a tree of relational content with the user as the root node.  
  */
 
 public class HoopoeLoader {
-	
-	
+		
 	public static void main(String[] args) {
 		
 		SetUp s = new SetUp();
@@ -36,6 +29,9 @@ public class HoopoeLoader {
 		DataGrabber h = new DataGrabber();
 		//user status history from twitter
 		h.getRuserHx();
+		h.getUserInfo(rootUser);
+		h.getFollowers(rootUser);
+		h.getFriends(rootUser);
 	}
 	
 	public String getUser(){	

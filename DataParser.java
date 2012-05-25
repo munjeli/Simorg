@@ -93,6 +93,11 @@ public class DataParser {
 				
 	}
 	
+	public void parseUserInfo(){}
+	
+	public void parseFFF(){}
+	
+	
 	//handling null reference in xml
 	public Node elemCheck(String tag){
 		if(item.getElementsByTagName(tag).item(0) != null){
