@@ -26,78 +26,84 @@ public class DataParser {
 	public void statusParser() throws ParserConfigurationException, SAXException, IOException{
 		System.out.println("Beginning status history parse...");
 		
+		ArrayList<String> tagNames = new ArrayList<String>();
+		tagNames.add("created_at");
+		tagNames.add("id");
+		tagNames.add("text");
+		tagNames.add("retweeted");
+		tagNames.add("retweet_count");
+		tagNames.add("in_reply_to_status_id");
+		tagNames.add("in_reply_to_user_id");
+		tagNames.add("in_reply_to_screen_name");
+		tagNames.add("favorited");
+		tagNames.add("geo");
+		tagNames.add("place");
+		tagNames.add("coordinates");
+		tagNames.add("source");
+		
+		
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); 
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		
+		PrintWriter out = new PrintWriter(idS.myHome + "/Documents/HoopoeData/" +  idS.rootUser + "Status.csv");		
 		String fileName = (idS.hoopoeData + "/" + idS.rootUser + "Hx.xml");
 		File f = new File(fileName);
 		Document doc = builder.parse(f);
 		doc.getDocumentElement().normalize();
 		
-		PrintWriter out = new PrintWriter(idS.myHome + "/Documents/HoopoeData/" +  idS.rootUser + "StatusHx.csv");
-		
+		//work within each status update; get the tags return the values
 		NodeList nodes = doc.getElementsByTagName("status");
 		int statusCount = nodes.getLength();
 				
 		        for (int i = 0; i< statusCount; i++) {
 		        	Node statusNode = nodes.item(i);
 		        	item = (Element) statusNode;
-	        	
-		        	Node createdAtNode = elemCheck("created_at");
-		        	String createdAt = nodeCheck(createdAtNode);
 		        	
-		        	Node idNode = elemCheck("id");
-		        	String idTwee = nodeCheck(idNode);
+		        	ArrayList<String> statusVals = parseTags(tagNames);
 		        	
-		        	Node textNode = elemCheck("text");
-		        	String text = perfText(nodeCheck(textNode));
-		        			        	
-		        	String linkTxt = linkScrape(text);
-		        	
-		        	Node retweetedNode = elemCheck("retweeted");
-		        	String retweeted = nodeCheck(retweetedNode);
-		        	
-		        	Node retweetCountNode = elemCheck("retweet_count");
-		        	String retweetCount = nodeCheck(retweetCountNode);
-		        	
-		        	Node inReplyToStatusIdNode = elemCheck("in_reply_to_status_id");
-		        	String inReplyToStatusId = nodeCheck(inReplyToStatusIdNode);
-		        	
-		        	Node replyToUserIdNode = elemCheck("in_reply_to_user_id");
-		        	String replyToUserId = nodeCheck(replyToUserIdNode);
-		        	
-		        	Node replyToScrNameNode = elemCheck("in_reply_to_screen_name");
-		        	String replyToScrName = nodeCheck(replyToScrNameNode);
-		        	
-		        	Node favoritedNode = elemCheck("favorited");
-		        	String favorited = nodeCheck(favoritedNode);
-		        	
-		        	Node geoNode = elemCheck("geo");
-		        	String geo = nodeCheck(geoNode);
-		        	
-		        	Node placeNode = elemCheck("place");
-		        	String place = nodeCheck(placeNode);
-		        	
-		        	Node coordinatesNode = elemCheck("coordinates");
-		        	String coordinates = nodeCheck(coordinatesNode);
-		        	
-		        	Node sourceNode = elemCheck("source");
-		        	String source = nodeCheck(sourceNode);
-		        	
-		        	out.println(createdAt + "\t" + idTwee + "\t" + text + "\t" + linkTxt + "\t" + retweeted + "\t" + retweetCount + "\t" + inReplyToStatusId + "\t" + replyToUserId + "\t" + replyToScrName + "\t" + favorited + "\t" + geo + "\t" + place + "\t" + coordinates + "\t" + source);
-
+		        	//clean the tweetText
+		        	String clnTweet = perfText(statusVals.get(2));
+		        	//scrape the links if there are any
+		        	String linktxt = linkScrape(clnTweet);
+		        	//return the cleaned tweet, insert the link column
+		        	statusVals.set(2, clnTweet);
+		        	statusVals.add(3, linktxt);			       
+		
+					StringBuilder statusStr = new StringBuilder();
+			            for(String s : statusVals){
+			            	statusStr.append(s);
+			            	statusStr.append("\t");
+			            }
+					
+			        out.println(statusStr.toString());	
+	        
 		        }
 		        
-		        out.close();
+			    out.close();
 		        System.out.println("Parse Finished");
 				
 	}
-	
+		
 	public void parseUserInfo(){}
 	
 	public void parseFFF(){}
 	
-	
+	 //all this method does is take an array of tags and return an array of values
+	 public ArrayList<String> parseTags(ArrayList<String> tags){
+		
+		ArrayList<String> nodeVals = new ArrayList<String>();
+		
+		for(String tag : tags){				
+			//for each tag in the tags array
+			Node toParse = elemCheck(tag);
+			String nodeVal = nodeCheck(toParse);	
+			nodeVals.add(nodeVal);
+		}
+		
+		return nodeVals;
+				
+	}
+		
 	//handling null reference in xml
 	public Node elemCheck(String tag){
 		if(item.getElementsByTagName(tag).item(0) != null){
@@ -126,6 +132,7 @@ public class DataParser {
 	//using a regular expression to pull links from the tweets
 	public String linkScrape(String txt){
 		
+		ArrayList<String> links = new ArrayList<String>();
 		String link = null;
 		 
 			String regex = "\\(?\\b(http://|www[.])[-A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]";
@@ -140,11 +147,24 @@ public class DataParser {
 							}
 						link = urlStr;						
 					}
-				
+				//the links go to a listarray
 				if (link != null)
-					return link;
+					links.add(link);  
 				else 
-					return "null";
+					link = ("null");
+				
+				//if there's more than one, they'll concat into a string
+				if(links.size() < 1){
+					StringBuilder linkStr = new StringBuilder();
+						for( String s : links){
+							linkStr.append(s);
+							linkStr.append(" ");
+						}
+					return linkStr.toString();
+				}
+				
+				else 
+					return link;
 	}
 		
 
