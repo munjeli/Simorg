@@ -1,7 +1,18 @@
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.io.*; 
+
 import javax.net.ssl.HttpsURLConnection;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 //This class is for the queries to twitter's servers
 //Each query produces a temp file for the parser to format
@@ -52,7 +63,49 @@ public class DataGrabber {
 	
 	//Friendships are a boolean value describing two-way follows
 	//up to 100 ids can be queried at a time
-	public void getFriendships(){}
+	public void getFriendships(String filename, String usr) throws ParserConfigurationException, SAXException, IOException{
+		
+		File friendsrc = new File(filename);
+		DocumentBuilderFactory friendfac = DocumentBuilderFactory.newInstance(); 
+		DocumentBuilder friendbdr = friendfac.newDocumentBuilder();
+		Document frienddoc = friendbdr.parse(friendsrc);
+		Element fitem;
+		ArrayList<String> friends = new ArrayList<String>(); 
+		
+		frienddoc.getDocumentElement().normalize();
+		
+		NodeList nodes = frienddoc.getElementsByTagName("ids");
+		int fcount = nodes.getLength();
+		
+		//you can only load 100 names at a time to the friendship query
+		for (int i = 0; i< 100; i++) {
+        	Node id_node = nodes.item(i);
+        	fitem = (Element) id_node;
+        	
+        	Node id = DataParser.elemCheck("id");
+        	String fid = DataParser.nodeCheck(id);
+        	
+        	friends.add(fid);
+        	id.removeChild(id);
+		}
+		
+		idParse(friends);
+  	
+		}
+		
+		private String idParse(ArrayList<String> friends){
+		
+			StringBuilder friendStr = new StringBuilder();
+				for(String f : friends){
+					friendStr.append(f);
+					friendStr.append(", ");
+				}
+			return friendStr.toString(); 
+		}
+		
+		
+		
+	}
 	
 	//connect with the input query
 	public void makeConnection(String https_url, String filex){

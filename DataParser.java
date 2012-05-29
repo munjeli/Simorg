@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 public class DataParser {
 	
-	Element item;
+	static Element item;
 	
 	public void statusParser() throws ParserConfigurationException, SAXException, IOException{
 		System.out.println("Beginning status history parse...");
@@ -105,7 +105,7 @@ public class DataParser {
 	}
 		
 	//handling null reference in xml
-	public Node elemCheck(String tag){
+	public static Node elemCheck(String tag){
 		if(item.getElementsByTagName(tag).item(0) != null){
 			return item.getElementsByTagName(tag).item(0);
 		}
@@ -113,7 +113,7 @@ public class DataParser {
 	}
 	
 	//handling null reference in xml
-	public String nodeCheck(Node ele){
+	public static String nodeCheck(Node ele){
 		if(ele.getFirstChild() != null){
 			return ele.getFirstChild().getNodeValue();
 		}
