@@ -64,7 +64,11 @@ public class DataGrabber {
 	//Friendships are a boolean value describing two-way follows
 	//up to 100 ids can be queried at a time
 	public void getFriendships(String filename, String usr) throws ParserConfigurationException, SAXException, IOException{
+		System.out.println("Assembling friendship file...");
 		
+		//the user id needs to be generalized so I can use the method for
+		//any user passed, but I need to figure out when to parse it from userInfo
+		String usrid = idS.rootUser_id;		
 		File friendsrc = new File(filename);
 		DocumentBuilderFactory friendfac = DocumentBuilderFactory.newInstance(); 
 		DocumentBuilder friendbdr = friendfac.newDocumentBuilder();
@@ -77,35 +81,42 @@ public class DataGrabber {
 		int fcount = nodes.getLength();
 		int floop = fcount/100;
 		
+		int usrstr = 0;
+		while(usrstr < floop){
+			
 		//you can only load 100 names at a time to the friendship query
-		for (int i = 0; i< 100; i++) {
-        	Node id_node = nodes.item(i);
-        	DataParser.item = (Element) id_node;
-        	
-        	Node id = DataParser.elemCheck("id");
-        	String fid = DataParser.nodeCheck(id);
-        	
-        	friends.add(fid);
-        	id.removeChild(id);
-		}
+			for (int i = 0; i< 100; i++) {
+	        	Node id_node = nodes.item(i);
+	        	DataParser.item = (Element) id_node;
+	        	
+	        	Node id = DataParser.elemCheck("id");
+	        	String fid = DataParser.nodeCheck(id);
+	        	
+	        	friends.add(fid);
+	        	id.removeChild(id);
+			}
 		
-		idParse(friends);
-  	
+			
+		String friendids = idParse(friends);
+		String filex = usr + "Friendships.xml";	 
+	    String https_url = "https://api.twitter.com/1/friends/ids.xml?cursor=-1&screen_name=" + usrid + friendids;
+	    makeConnection(https_url, filex);       
+		
+		 usrstr++; 
 		}
+  	
+	     System.out.println("Friendship file for user " + usr + "complete.");
+	}
 		
 		private String idParse(ArrayList<String> friends){
 		
 			StringBuilder friendStr = new StringBuilder();
 				for(String f : friends){
 					friendStr.append(f);					
-					friendStr.append(", ");
+					friendStr.append(",");
 				}
 			return friendStr.toString(); 
 		}
-		
-
-		
-	
 	
 	//connect with the input query
 	public void makeConnection(String https_url, String filex){

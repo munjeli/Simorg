@@ -18,9 +18,12 @@ public class HoopoeLoader {
 	}
 	
 	//Get the name of the user who will be the root of the tree
-	public void chooseUser(String userName){
-		
+	public void chooseUser(String userName){		
 		idS.rootUser = userName;		
+	}
+	
+	public void choose_ruid(String user_id){
+		idS.rootUser_id = user_id;
 	}
 	
 	public void userData(String rootUser){
@@ -33,8 +36,7 @@ public class HoopoeLoader {
 		h.getFriends(rootUser);
 	}
 	
-	public String getUser(){	
-		
+	public String getUser(){			
 		return idS.rootUser;
 	}
 	

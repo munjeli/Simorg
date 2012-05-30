@@ -33,6 +33,8 @@ public class SetUp {
 	}
 	
 	/*set up a database with the rootuser's name for the data*/
-	public void makeDB(){}
+	public void makeDB(){
+		String dbName = idS.rootUser + "_db";
+	}
 
 }

@@ -49,10 +49,11 @@ public class DataParser {
 		File f = new File(fileName);
 		Document doc = builder.parse(f);
 		doc.getDocumentElement().normalize();
-		
+			
 		//work within each status update; get the tags return the values
 		NodeList nodes = doc.getElementsByTagName("status");
 		int statusCount = nodes.getLength();
+
 				
 		        for (int i = 0; i< statusCount; i++) {
 		        	Node statusNode = nodes.item(i);
@@ -66,8 +67,8 @@ public class DataParser {
 		        	String linktxt = linkScrape(clnTweet);
 		        	//return the cleaned tweet, insert the link column
 		        	statusVals.set(2, clnTweet);
-		        	statusVals.add(3, linktxt);			       
-		
+		        	statusVals.add(3, linktxt);	
+		        	
 					StringBuilder statusStr = new StringBuilder();
 			            for(String s : statusVals){
 			            	statusStr.append(s);
