@@ -28,7 +28,7 @@ public class DataGrabber {
 	public void getRuserHx(){
 		 System.out.println("Getting user status history...");
 		 String filex = idS.rootUser + "Hx.xml";
-	     String https_url = "https://twitter.com/statuses/user_timeline/" + idS.rootUser + ".xml?count=100&page=[1-32]";
+	     String https_url = "https://twitter.com/statuses/user_timeline.xml?include_entities=true&include_rt=true&screen_name=" + idS.rootUser + "&count=5";
 	     makeConnection(https_url, filex);
 	     System.out.println("Finished downloading user status history.");
 	     
@@ -69,18 +69,18 @@ public class DataGrabber {
 		DocumentBuilderFactory friendfac = DocumentBuilderFactory.newInstance(); 
 		DocumentBuilder friendbdr = friendfac.newDocumentBuilder();
 		Document frienddoc = friendbdr.parse(friendsrc);
-		Element fitem;
 		ArrayList<String> friends = new ArrayList<String>(); 
 		
 		frienddoc.getDocumentElement().normalize();
 		
 		NodeList nodes = frienddoc.getElementsByTagName("ids");
 		int fcount = nodes.getLength();
+		int floop = fcount/100;
 		
 		//you can only load 100 names at a time to the friendship query
 		for (int i = 0; i< 100; i++) {
         	Node id_node = nodes.item(i);
-        	fitem = (Element) id_node;
+        	DataParser.item = (Element) id_node;
         	
         	Node id = DataParser.elemCheck("id");
         	String fid = DataParser.nodeCheck(id);
@@ -97,15 +97,15 @@ public class DataGrabber {
 		
 			StringBuilder friendStr = new StringBuilder();
 				for(String f : friends){
-					friendStr.append(f);
+					friendStr.append(f);					
 					friendStr.append(", ");
 				}
 			return friendStr.toString(); 
 		}
 		
+
 		
-		
-	}
+	
 	
 	//connect with the input query
 	public void makeConnection(String https_url, String filex){

@@ -9,16 +9,21 @@ import java.io.*;
 
 public class SetUp {
 	
+	/*set up a directory for the temp files to download*/
 	public void makeHDir(String myHome){
 					
-		File hData = new File(myHome + "/Documents/HoopoeData");
+		File hData = new File(idS.hoopoeData);
 		
 		try
 		{
-			if(hData.mkdir())
-			System.out.println("Directory Created");		
+			if (hData.exists())
+				System.out.println("Tempfile directory exists.");
+			if(!hData.exists()){
+				hData.mkdir();
+				System.out.println("Tempfile directory created.");
+			}
 			else
-			System.out.println("Directory already exists or cannot be created");
+				System.out.println("Directory cannot be created.");
 		}
 		
 		catch(Exception e)
@@ -26,5 +31,8 @@ public class SetUp {
 			e.printStackTrace();
 		}
 	}
+	
+	/*set up a database with the rootuser's name for the data*/
+	public void makeDB(){}
 
 }

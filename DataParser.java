@@ -41,7 +41,6 @@ public class DataParser {
 		tagNames.add("coordinates");
 		tagNames.add("source");
 		
-		
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); 
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		
@@ -80,12 +79,75 @@ public class DataParser {
 		        }
 		        
 			    out.close();
-		        System.out.println("Parse Finished");
+		        System.out.println("Status parse complete.");
 				
 	}
-		
-	public void parseUserInfo(){}
 	
+	//method to parse user details 		
+		public void userParser(String usr, String userfile) throws ParserConfigurationException, SAXException, IOException{
+			System.out.println("Beginning user history parse...");
+			
+			ArrayList<String> tagNames = new ArrayList<String>();			
+			tagNames.add("id");
+			tagNames.add("name");
+			tagNames.add("screen_name");
+			tagNames.add("location");
+			tagNames.add("description");
+			tagNames.add("profile_image_url");
+			tagNames.add("url");
+			tagNames.add("protected");
+			tagNames.add("followers_count");
+			tagNames.add("friends_count");
+			tagNames.add("created_at");
+			tagNames.add("favourites_count");
+			tagNames.add("time_zone");
+			tagNames.add("geo_enabled");
+			tagNames.add("verified");
+			tagNames.add("statuses_count");
+			tagNames.add("lang");
+			tagNames.add("listed_count");
+			
+			
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); 
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			
+			PrintWriter out = new PrintWriter(idS.myHome + "/Documents/HoopoeData/" +  usr + "Info.csv");		
+			String fileName = (idS.hoopoeData + "/" + usr + userfile);
+			File f = new File(fileName);
+			Document doc = builder.parse(f);
+			doc.getDocumentElement().normalize();
+			
+			//work within each status update; get the tags return the values
+			NodeList nodes = doc.getElementsByTagName("user");
+			int userCount = nodes.getLength();
+					
+			        for (int i = 0; i< userCount; i++) {
+			        	Node userNode = nodes.item(i);
+			        	item = (Element) userNode;
+			        	
+			        	ArrayList<String> userVals = parseTags(tagNames);
+			        	
+			        	//clean the user description
+			        	String clnDesc = perfText(userVals.get(4));
+			        	//return the user's description
+			        	userVals.set(4, clnDesc);
+			        
+			        
+						StringBuilder userStr = new StringBuilder();
+			            for(String s : userVals){
+			            	userStr.append(s);
+			            	userStr.append("\t");
+			            }
+			            
+			            out.println(userStr.toString());
+			        }
+			        
+				    out.close();
+			        System.out.println("User parse complete.");
+					
+		}
+
+	//parsing the friendship file into csv for loading
 	public void parseFFF(){}
 	
 	 //all this method does is take an array of tags and return an array of values

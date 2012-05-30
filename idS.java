@@ -5,5 +5,6 @@ public class idS{
 	static String rootUser;
 	static String myHome = System.getProperty("user.home");
 	static String hoopoeData = myHome + "/Documents/HoopoeData";
+	static String rootUser_id;
 	
 }

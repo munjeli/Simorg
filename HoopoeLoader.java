@@ -14,8 +14,7 @@ public class HoopoeLoader {
 	public static void main(String[] args) {
 		
 		SetUp s = new SetUp();
-		s.makeHDir(idS.myHome);
-				
+		s.makeHDir(idS.myHome);				
 	}
 	
 	//Get the name of the user who will be the root of the tree
@@ -40,8 +39,12 @@ public class HoopoeLoader {
 	}
 	
 	public void parseData() throws ParserConfigurationException, SAXException, IOException{
+		String ruserInfo = "Info.xml";
+		
 		DataParser s = new DataParser();
 		s.statusParser();
+		//parse the rootUser info
+		s.userParser(idS.rootUser, ruserInfo);
 	}
 	
 
