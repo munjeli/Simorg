@@ -21,10 +21,12 @@ import java.util.regex.Pattern;
 
 public class DataParser {
 	
-	static Element item;
+	//static Element item;
 	
 	public void statusParser() throws ParserConfigurationException, SAXException, IOException{
 		System.out.println("Beginning status history parse...");
+		
+		Element item;
 		
 		ArrayList<String> tagNames = new ArrayList<String>();
 		tagNames.add("created_at");
@@ -53,13 +55,13 @@ public class DataParser {
 		//work within each status update; get the tags return the values
 		NodeList nodes = doc.getElementsByTagName("status");
 		int statusCount = nodes.getLength();
-
+		
 				
 		        for (int i = 0; i< statusCount; i++) {
 		        	Node statusNode = nodes.item(i);
 		        	item = (Element) statusNode;
 		        	
-		        	ArrayList<String> statusVals = parseTags(tagNames);
+		        	ArrayList<String> statusVals = parseTags(tagNames, item);
 		        	
 		        	//clean the tweetText
 		        	String clnTweet = perfText(statusVals.get(2));
@@ -124,9 +126,9 @@ public class DataParser {
 					
 			        for (int i = 0; i< userCount; i++) {
 			        	Node userNode = nodes.item(i);
-			        	item = (Element) userNode;
+			        	Element item = (Element) userNode;
 			        	
-			        	ArrayList<String> userVals = parseTags(tagNames);
+			        	ArrayList<String> userVals = parseTags(tagNames, item);
 			        	
 			        	//clean the user description
 			        	String clnDesc = perfText(userVals.get(4));
@@ -152,13 +154,13 @@ public class DataParser {
 	public void parseFFF(){}
 	
 	 //all this method does is take an array of tags and return an array of values
-	 public ArrayList<String> parseTags(ArrayList<String> tags){
+	 public ArrayList<String> parseTags(ArrayList<String> tags, Element item){
 		
 		ArrayList<String> nodeVals = new ArrayList<String>();
 		
 		for(String tag : tags){				
 			//for each tag in the tags array
-			Node toParse = elemCheck(tag);
+			Node toParse = elemCheck(tag, item);
 			String nodeVal = nodeCheck(toParse);	
 			nodeVals.add(nodeVal);
 		}
@@ -168,7 +170,7 @@ public class DataParser {
 	}
 		
 	//handling null reference in xml
-	public static Node elemCheck(String tag){
+	public static Node elemCheck(String tag, Element item){
 		if(item.getElementsByTagName(tag).item(0) != null){
 			return item.getElementsByTagName(tag).item(0);
 		}
@@ -185,7 +187,7 @@ public class DataParser {
 	
 	//fixing the line breaks in the text string
 	public static String perfText(String inputStr) {		
-		String adjusted = inputStr.replaceAll("\\r?\\n", "");
+		String adjusted = inputStr.replaceAll("\\r?\\n?\\t?", "");
 		return adjusted;
 	}
 	

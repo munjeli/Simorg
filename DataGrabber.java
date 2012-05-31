@@ -28,13 +28,13 @@ public class DataGrabber {
 	public void getRuserHx(){
 		 System.out.println("Getting user status history...");
 		 String filex = idS.rootUser + "Hx.xml";
-	     String https_url = "https://twitter.com/statuses/user_timeline.xml?include_entities=true&include_rt=true&screen_name=" + idS.rootUser + "&count=5";
+	     String https_url = "https://twitter.com/statuses/user_timeline.xml?include_entities=true&include_rt=true&screen_name=" + idS.rootUser + "&count=1000";
 	     makeConnection(https_url, filex);
 	     System.out.println("Finished downloading user status history.");
 	     
 	  }
 	
-	//this is an all-purpose method to get general information about users
+	//this is an all-purpose method to get general information about users50
 	public void getUserInfo(String usr){
 		 System.out.println("Getting user information...");
 		 String filex = usr + "Info.xml";
@@ -85,9 +85,9 @@ public class DataGrabber {
 
 			for (int i = 0; i< fcount; i++) {
 	        	Node id_node = nodes.item(i);
-	        	DataParser.item = (Element) id_node;
+	        	Element item = (Element) id_node;
 	        	
-	        	Node id = DataParser.elemCheck("id");
+	        	Node id = DataParser.elemCheck("id", item);
 	        	String fid = DataParser.nodeCheck(id);
 	        	
 	        	friends.add(fid);

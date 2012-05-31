@@ -16,20 +16,19 @@ public class SetUp {
 		
 		try
 		{
-			if (hData.exists())
-				System.out.println("Tempfile directory exists.");
-			else if(!hData.exists()){
+			if (!hData.exists()){
 				hData.mkdir();
-				System.out.println("Tempfile directory created.");
-			}
+				System.out.println("Tempfile directory created.");}
+				
 			else
-				System.out.println("Directory cannot be created.");
-		}
-		
+				System.out.println("Tempfile directory exists.");
+		}				
 		catch(Exception e)
 		{
+			System.out.println("Tempfile cannot be created");
 			e.printStackTrace();
 		}
+		
 	}
 	
 	/*set up a database with the rootuser's name for the data*/
