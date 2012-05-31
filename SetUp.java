@@ -10,7 +10,7 @@ import java.io.*;
 public class SetUp {
 	
 	/*set up a directory for the temp files to download*/
-	public void makeHDir(String myHome){
+	public void makeHDir(){
 					
 		File hData = new File(idS.hoopoeData);
 		
@@ -18,7 +18,7 @@ public class SetUp {
 		{
 			if (hData.exists())
 				System.out.println("Tempfile directory exists.");
-			if(!hData.exists()){
+			else if(!hData.exists()){
 				hData.mkdir();
 				System.out.println("Tempfile directory created.");
 			}

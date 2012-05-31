@@ -12,9 +12,12 @@ import org.xml.sax.SAXException;
 public class HoopoeLoader {
 		
 	public static void main(String[] args) {
-		
+			
+	}
+	
+	public void setUp(){		
 		SetUp s = new SetUp();
-		s.makeHDir(idS.myHome);				
+		s.makeHDir();	
 	}
 	
 	//Get the name of the user who will be the root of the tree

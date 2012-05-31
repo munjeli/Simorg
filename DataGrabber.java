@@ -79,13 +79,11 @@ public class DataGrabber {
 		
 		NodeList nodes = frienddoc.getElementsByTagName("ids");
 		int fcount = nodes.getLength();
-		int floop = fcount/100;
 		
 		int usrstr = 0;
-		while(usrstr < floop){
-			
-		//you can only load 100 names at a time to the friendship query
-			for (int i = 0; i< 100; i++) {
+		while(usrstr < fcount){
+
+			for (int i = 0; i< fcount; i++) {
 	        	Node id_node = nodes.item(i);
 	        	DataParser.item = (Element) id_node;
 	        	
