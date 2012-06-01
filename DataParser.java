@@ -20,9 +20,7 @@ import java.util.regex.Pattern;
 
 
 public class DataParser {
-	
-	//static Element item;
-	
+
 	public void statusParser() throws ParserConfigurationException, SAXException, IOException{
 		System.out.println("Beginning status history parse...");
 		
@@ -46,8 +44,8 @@ public class DataParser {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); 
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		
-		PrintWriter out = new PrintWriter(idS.myHome + "/Documents/HoopoeData/" +  idS.rootUser + "Status.csv");		
-		String fileName = (idS.hoopoeData + "/" + idS.rootUser + "Hx.xml");
+		PrintWriter out = new PrintWriter(MyIds.myHome + "/Documents/HoopoeData/" +  MyIds.rootUser + "Status.csv");		
+		String fileName = (MyIds.hoopoeData + "/" + MyIds.rootUser + "Hx.xml");
 		File f = new File(fileName);
 		Document doc = builder.parse(f);
 		doc.getDocumentElement().normalize();
@@ -64,7 +62,7 @@ public class DataParser {
 		        	ArrayList<String> statusVals = parseTags(tagNames, item);
 		        	
 		        	//clean the tweetText
-		        	String clnTweet = perfText(statusVals.get(2));
+		        	String clnTweet = HooUtil.perfText(statusVals.get(2));
 		        	//scrape the links if there are any
 		        	String linktxt = linkScrape(clnTweet);
 		        	//return the cleaned tweet, insert the link column
@@ -114,8 +112,8 @@ public class DataParser {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); 
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			
-			PrintWriter out = new PrintWriter(idS.myHome + "/Documents/HoopoeData/" +  usr + "Info.csv");		
-			String fileName = (idS.hoopoeData + "/" + usr + userfile);
+			PrintWriter out = new PrintWriter(MyIds.myHome + "/Documents/HoopoeData/" +  usr + "Info.csv");		
+			String fileName = (MyIds.hoopoeData + "/" + usr + userfile);
 			File f = new File(fileName);
 			Document doc = builder.parse(f);
 			doc.getDocumentElement().normalize();
@@ -131,7 +129,7 @@ public class DataParser {
 			        	ArrayList<String> userVals = parseTags(tagNames, item);
 			        	
 			        	//clean the user description
-			        	String clnDesc = perfText(userVals.get(4));
+			        	String clnDesc = HooUtil.perfText(userVals.get(4));
 			        	//return the user's description
 			        	userVals.set(4, clnDesc);
 			        
@@ -160,35 +158,13 @@ public class DataParser {
 		
 		for(String tag : tags){				
 			//for each tag in the tags array
-			Node toParse = elemCheck(tag, item);
-			String nodeVal = nodeCheck(toParse);	
+			Node toParse = HooUtil.elemCheck(tag, item);
+			String nodeVal = HooUtil.nodeCheck(toParse);	
 			nodeVals.add(nodeVal);
 		}
 		
 		return nodeVals;
 				
-	}
-		
-	//handling null reference in xml
-	public static Node elemCheck(String tag, Element item){
-		if(item.getElementsByTagName(tag).item(0) != null){
-			return item.getElementsByTagName(tag).item(0);
-		}
-		else return null;	
-	}
-	
-	//handling null reference in xml
-	public static String nodeCheck(Node ele){
-		if(ele.getFirstChild() != null){
-			return ele.getFirstChild().getNodeValue();
-		}
-		else return "null";
-	}
-	
-	//fixing the line breaks in the text string
-	public static String perfText(String inputStr) {		
-		String adjusted = inputStr.replaceAll("\\r?\\n?\\t?", "");
-		return adjusted;
 	}
 	
 	//pulling RT @ from the tweet text

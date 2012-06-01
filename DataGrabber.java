@@ -1,6 +1,8 @@
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.io.*; 
 
 import javax.net.ssl.HttpsURLConnection;
@@ -24,11 +26,12 @@ public class DataGrabber {
  * and lots of redundant headers. Twitter only caches 3200 tweets for any given
  * user. 
  */
+	File destFile;
 	
 	public void getRuserHx(){
 		 System.out.println("Getting user status history...");
-		 String filex = idS.rootUser + "Hx.xml";
-	     String https_url = "https://twitter.com/statuses/user_timeline.xml?include_entities=true&include_rt=true&screen_name=" + idS.rootUser + "&count=1000";
+		 String filex = MyIds.rootUser + "Hx.xml";
+	     String https_url = "https://twitter.com/statuses/user_timeline.xml?include_entities=true&include_rt=true&screen_name=" + MyIds.rootUser + "&count=1000";
 	     makeConnection(https_url, filex);
 	     System.out.println("Finished downloading user status history.");
 	     
@@ -49,7 +52,7 @@ public class DataGrabber {
 		 String filex = usr + "TempFollowers.xml";
 	     String https_url = "https://api.twitter.com/1/followers/ids.xml?cursor=-1&screen_name=" + usr;	 
 	     makeConnection(https_url, filex);  
-	     System.out.println("Finished downloading follower ids.");	
+	     System.out.println("Finished downloading followers.");	
 	}
 	
 	//Friends are the people the root is following...
@@ -58,63 +61,67 @@ public class DataGrabber {
 		 String filex = usr + "TempFriends.xml";	 
 	     String https_url = "https://api.twitter.com/1/friends/ids.xml?cursor=-1&screen_name=" + usr;
 	     makeConnection(https_url, filex);       
-	     System.out.println("Finished downloading friend ids.");
+	     System.out.println("Finished downloading friends.");
+	}
+	
+	//get the boolean friendship value from the followers file first
+	public void followers_F() throws ParserConfigurationException, SAXException, IOException {
+		String tempFile = MyIds.hoopoeData + "/" + MyIds.rootUser; 
+		
+			try {
+				getFriendships(tempFile + "TempFollowers.xml", MyIds.rootUser);
+			} 
+			catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+		File F_Followers = new File(tempFile + "FFollowers.xml");
+		destFile.renameTo(F_Followers);		
 	}
 	
 	//Friendships are a boolean value describing two-way follows
-	//up to 100 ids can be queried at a time
-	public void getFriendships(String filename, String usr) throws ParserConfigurationException, SAXException, IOException{
+	//up to 100 IdStr can be queried at a time
+	public void getFriendships(String filename, String usr) throws ParserConfigurationException, SAXException, IOException, InterruptedException{
 		System.out.println("Assembling friendship file...");
 		
 		//the user id needs to be generalized so I can use the method for
 		//any user passed, but I need to figure out when to parse it from userInfo
-		String usrid = idS.rootUser_id;		
+		String usrid = MyIds.rootUser_id;		
 		File friendsrc = new File(filename);
 		DocumentBuilderFactory friendfac = DocumentBuilderFactory.newInstance(); 
 		DocumentBuilder friendbdr = friendfac.newDocumentBuilder();
 		Document frienddoc = friendbdr.parse(friendsrc);
-		ArrayList<String> friends = new ArrayList<String>(); 
+		
+		ArrayList<String> friendships = new ArrayList<String>();
 		
 		frienddoc.getDocumentElement().normalize();
 		
-		NodeList nodes = frienddoc.getElementsByTagName("ids");
-		int fcount = nodes.getLength();
+		NodeList nodes = frienddoc.getElementsByTagName("id");
+		int fcount = nodes.getLength();		
 		
-		int usrstr = 0;
-		while(usrstr < fcount){
-
-			for (int i = 0; i< fcount; i++) {
+		for(int i = 0; i < fcount; i++){
 	        	Node id_node = nodes.item(i);
 	        	Element item = (Element) id_node;
 	        	
-	        	Node id = DataParser.elemCheck("id", item);
-	        	String fid = DataParser.nodeCheck(id);
+	        	Node id = HooUtil.elemCheck("id", item);
+	        	String fid = HooUtil.nodeNoChCheck(id);
 	        	
-	        	friends.add(fid);
-	        	id.removeChild(id);
-			}
-		
-			
-		String friendids = idParse(friends);
-		String filex = usr + "Friendships.xml";	 
-	    String https_url = "https://api.twitter.com/1/friends/ids.xml?cursor=-1&screen_name=" + usrid + friendids;
-	    makeConnection(https_url, filex);       
-		
-		 usrstr++; 
+	        	friendships.add(fid);
+
 		}
-  	
-	     System.out.println("Friendship file for user " + usr + "complete.");
+				
+		String filex = usr + "TempFriendship.xml";		
+		Iterator<String> ffit = friendships.iterator(); 
+		
+		while(ffit.hasNext()){
+			String ffid = ffit.next();	
+		    //String https_url = "https://api.twitter.com/1/friendships/exists.xml?user_id_a=" + usrid + "&user_id_b=" + ffid;
+		    //makeConnection(https_url, filex);
+			System.out.println(ffid);
 	}
 		
-		private String idParse(ArrayList<String> friends){
-		
-			StringBuilder friendStr = new StringBuilder();
-				for(String f : friends){
-					friendStr.append(f);					
-					friendStr.append(",");
-				}
-			return friendStr.toString(); 
-		}
+	     System.out.println("Evaluating for friendships...");
+	}
 	
 	//connect with the input query
 	public void makeConnection(String https_url, String filex){
@@ -142,13 +149,12 @@ public class DataGrabber {
 			try {			
 			   BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
 				  
-			      File destFile = new File("/" + filex);
-			      PrintWriter out = new PrintWriter(idS.hoopoeData + destFile);
-	
-			   	   String input;		
-				   while ((input = br.readLine()) != null){
-				   out.println(input);
-				   }
+			      destFile = new File("/" + filex);
+			      PrintWriter out = new PrintWriter(new FileWriter(MyIds.hoopoeData + destFile, true));	
+			   	  String input;		
+				  while ((input = br.readLine()) != null){
+				  out.println(input);
+			}
 				
 			   out.flush();
 			   out.close();
@@ -158,6 +164,7 @@ public class DataGrabber {
 			catch (IOException e) {
 			   e.printStackTrace();
 			}	
+
 	    }	
 	}
 	

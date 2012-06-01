@@ -12,7 +12,7 @@ public class SetUp {
 	/*set up a directory for the temp files to download*/
 	public void makeHDir(){
 					
-		File hData = new File(idS.hoopoeData);
+		File hData = new File(MyIds.hoopoeData);
 		
 		try
 		{
@@ -33,7 +33,7 @@ public class SetUp {
 	
 	/*set up a database with the rootuser's name for the data*/
 	public void makeDB(){
-		String dbName = idS.rootUser + "_db";
+		String dbName = MyIds.rootUser + "_db";
 	}
 
 }

@@ -22,14 +22,14 @@ public class HoopoeLoader {
 	
 	//Get the name of the user who will be the root of the tree
 	public void chooseUser(String userName){		
-		idS.rootUser = userName;		
+		MyIds.rootUser = userName;		
 	}
 	
 	public void choose_ruid(String user_id){
-		idS.rootUser_id = user_id;
+		MyIds.rootUser_id = user_id;
 	}
 	
-	public void userData(String rootUser){
+	public void userData(String rootUser) throws ParserConfigurationException, SAXException, IOException{
 		
 		DataGrabber h = new DataGrabber();
 		//user status history from twitter
@@ -37,10 +37,11 @@ public class HoopoeLoader {
 		h.getUserInfo(rootUser);
 		h.getFollowers(rootUser);
 		h.getFriends(rootUser);
+		h.followers_F();
 	}
 	
 	public String getUser(){			
-		return idS.rootUser;
+		return MyIds.rootUser;
 	}
 	
 	public void parseData() throws ParserConfigurationException, SAXException, IOException{
@@ -49,7 +50,7 @@ public class HoopoeLoader {
 		DataParser s = new DataParser();
 		s.statusParser();
 		//parse the rootUser info
-		s.userParser(idS.rootUser, ruserInfo);
+		s.userParser(MyIds.rootUser, ruserInfo);
 	}
 	
 
