@@ -149,7 +149,9 @@ public class DataParser {
 		}
 
 	//parsing the friendship file into csv for loading
-	public void parseFFF(){}
+	public void parseTempFF(){
+		
+	}
 	
 	 //all this method does is take an array of tags and return an array of values
 	 public ArrayList<String> parseTags(ArrayList<String> tags, Element item){
@@ -207,6 +209,8 @@ public class DataParser {
 				else 
 					return link;
 	}
+	
+
 		
 
 }

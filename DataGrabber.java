@@ -69,59 +69,17 @@ public class DataGrabber {
 		String tempFile = MyIds.hoopoeData + "/" + MyIds.rootUser; 
 		
 			try {
-				getFriendships(tempFile + "TempFollowers.xml", MyIds.rootUser);
+				Friendship FF = new Friendship();
+				FF.getFriendships(tempFile + "TempFollowers.xml", MyIds.rootUser);
 			} 
 			catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			
-		File F_Followers = new File(tempFile + "FFollowers.xml");
-		destFile.renameTo(F_Followers);		
+		//File F_Followers = new File(tempFile + "FFollowers.xml");
+		//destFile.renameTo(F_Followers);		
 	}
-	
-	//Friendships are a boolean value describing two-way follows
-	//up to 100 IdStr can be queried at a time
-	public void getFriendships(String filename, String usr) throws ParserConfigurationException, SAXException, IOException, InterruptedException{
-		System.out.println("Assembling friendship file...");
-		
-		//the user id needs to be generalized so I can use the method for
-		//any user passed, but I need to figure out when to parse it from userInfo
-		String usrid = MyIds.rootUser_id;		
-		File friendsrc = new File(filename);
-		DocumentBuilderFactory friendfac = DocumentBuilderFactory.newInstance(); 
-		DocumentBuilder friendbdr = friendfac.newDocumentBuilder();
-		Document frienddoc = friendbdr.parse(friendsrc);
-		
-		ArrayList<String> friendships = new ArrayList<String>();
-		
-		frienddoc.getDocumentElement().normalize();
-		
-		NodeList nodes = frienddoc.getElementsByTagName("id");
-		int fcount = nodes.getLength();		
-		
-		for(int i = 0; i < fcount; i++){
-	        	Node id_node = nodes.item(i);
-	        	Element item = (Element) id_node;
-	        	
-	        	Node id = HooUtil.elemCheck("id", item);
-	        	String fid = HooUtil.nodeNoChCheck(id);
-	        	
-	        	friendships.add(fid);
 
-		}
-				
-		String filex = usr + "TempFriendship.xml";		
-		Iterator<String> ffit = friendships.iterator(); 
-		
-		while(ffit.hasNext()){
-			String ffid = ffit.next();	
-		    //String https_url = "https://api.twitter.com/1/friendships/exists.xml?user_id_a=" + usrid + "&user_id_b=" + ffid;
-		    //makeConnection(https_url, filex);
-			System.out.println(ffid);
-	}
-		
-	     System.out.println("Evaluating for friendships...");
-	}
 	
 	//connect with the input query
 	public void makeConnection(String https_url, String filex){
@@ -141,7 +99,7 @@ public class DataGrabber {
 	    }
 		
 	}
-	
+
 	//this method prints the incoming streams to xml temp files for parsing
 	private void print_content(HttpsURLConnection con, String filex){
 		if(con!=null){
@@ -165,12 +123,15 @@ public class DataGrabber {
 			   e.printStackTrace();
 			}	
 
-	    }	
+	    }
 	}
+		
+
+}
 	
 	
 	  	
-}
+
    
 	
 

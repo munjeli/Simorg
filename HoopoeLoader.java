@@ -29,29 +29,29 @@ public class HoopoeLoader {
 		MyIds.rootUser_id = user_id;
 	}
 	
-	public void userData(String rootUser) throws ParserConfigurationException, SAXException, IOException{
+	public void userData(String rootUser) throws ParserConfigurationException, SAXException, IOException, InterruptedException{
 		
 		DataGrabber h = new DataGrabber();
 		//user status history from twitter
-		h.getRuserHx();
+		/*h.getRuserHx();
 		h.getUserInfo(rootUser);
 		h.getFollowers(rootUser);
-		h.getFriends(rootUser);
-		h.followers_F();
+		h.getFriends(rootUser);*/
+		h.followers_F();		
 	}
 	
 	public String getUser(){			
 		return MyIds.rootUser;
 	}
 	
-	public void parseData() throws ParserConfigurationException, SAXException, IOException{
+	/*public void parseData() throws ParserConfigurationException, SAXException, IOException{
 		String ruserInfo = "Info.xml";
 		
 		DataParser s = new DataParser();
 		s.statusParser();
 		//parse the rootUser info
 		s.userParser(MyIds.rootUser, ruserInfo);
-	}
+	}*/
 	
 
 }
