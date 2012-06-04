@@ -30,19 +30,28 @@ public class DataGrabber {
 	File destFile;
 	int qcount;
 	
-	public void getRuserHx() throws ParserConfigurationException, SAXException, IOException{
-		
-		
+	public void getRuserHx() throws ParserConfigurationException, SAXException, IOException, InterruptedException{
+			int downNodes = 0;
+			Integer statTot = 1;
+			String maxId = "3000000000";
+			
+			while(downNodes < statTot){
 			 System.out.println("Getting user status history...");
 			 String filex = MyIds.rootUser + "Hx.xml";
-		     String https_url = "https://twitter.com/statuses/user_timeline.xml?include_entities=true&include_rt=true&screen_name=" + MyIds.rootUser + "&count=100";
+		     String https_url = "https://twitter.com/statuses/user_timeline.xml?screen_name=" + MyIds.rootUser + "&count=300";
 		     makeConnection(https_url, filex);
 		     System.out.println("Finished downloading user status history.");
 		     
-		     File filename = new File(MyIds.hoopoeData + "/" + MyIds.rootUser + "Hx.xml");
+		     //set up for the loop		
+		     File filename = new File(MyIds.hoopoeData + "/" + MyIds.rootUser + "Hx.xml");		     
+		     downNodes = HooUtil.nodeCount(filename, "status");
+		     statTot = Integer.parseInt(HooUtil.nodeValue(filename, "user", "statuses_count", 0));
 		     
-		     String check = HooUtil.nodeValue(filename, "status", "id", 0);
-		     System.out.println(check);
+		     Integer loopMax = (Integer.parseInt(HooUtil.nodeValue(filename, "status", "id", 0)) - 1);
+		     maxId = loopMax.toString();
+		     Thread.sleep(4000);
+		     
+		}
 	     
 	  }
 	
