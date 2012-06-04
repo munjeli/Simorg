@@ -33,11 +33,11 @@ public class HoopoeLoader {
 		
 		DataGrabber h = new DataGrabber();
 		//user status history from twitter
-		/*h.getRuserHx();
-		h.getUserInfo(rootUser);
+		h.getRuserHx();
+		/*h.getUserInfo(rootUser);
 		h.getFollowers(rootUser);
 		h.getFriends(rootUser);*/
-		h.followers_F();		
+		//h.followers_F();		
 	}
 	
 	public String getUser(){			

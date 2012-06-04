@@ -25,7 +25,6 @@ import org.xml.sax.SAXException;
 public class Friendship {
 	
 	//Friendships are a boolean value describing two-way follows
-	//up to 100 IdStr can be queried at a time
 	public void getFriendships(String filename, String usr) throws ParserConfigurationException, SAXException, IOException, InterruptedException{
 		System.out.println("Assembling friendship file...");
 		
@@ -52,19 +51,20 @@ public class Friendship {
 				fid = HooUtil.nodeCheck(ele);
 		        	
 		        friendships.add(fid);
+		        ele.removeChild(ele);
 	
 			}
 				
 		String filex = usr + "TempFriendship.xml";		
 		Iterator<String> ffit = friendships.iterator(); 
 		
-		while(ffit.hasNext()){
-			String ffid = ffit.next();	
-		    String https_url = "https://api.twitter.com/1/friendships/exists.xml?user_id_a=" + usrid + "&user_id_b=" + ffid;
-		    		    
-		    makeFFConnection(https_url, filex, ffid);
+			while(ffit.hasNext()){
+				String ffid = ffit.next();	
+			    String https_url = "https://api.twitter.com/1/friendships/exists.xml?user_id_a=" + usrid + "&user_id_b=" + ffid;
+			    		    
+			    makeFFConnection(https_url, filex, ffid);
 			
-	}
+		}
 		
 	     System.out.println("Evaluating for friendships...");
 	}
@@ -115,5 +115,10 @@ public class Friendship {
 		
 		}
 
+	}
+	
+	//building an xml file for two-way results: 'true' friends
+	public void trueFriends(){
+		
 	}
 }

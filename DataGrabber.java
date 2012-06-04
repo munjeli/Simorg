@@ -16,6 +16,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+
 //This class is for the queries to twitter's servers
 //Each query produces a temp file for the parser to format
 public class DataGrabber {
@@ -27,13 +28,21 @@ public class DataGrabber {
  * user. 
  */
 	File destFile;
+	int qcount;
 	
-	public void getRuserHx(){
-		 System.out.println("Getting user status history...");
-		 String filex = MyIds.rootUser + "Hx.xml";
-	     String https_url = "https://twitter.com/statuses/user_timeline.xml?include_entities=true&include_rt=true&screen_name=" + MyIds.rootUser + "&count=1000";
-	     makeConnection(https_url, filex);
-	     System.out.println("Finished downloading user status history.");
+	public void getRuserHx() throws ParserConfigurationException, SAXException, IOException{
+		
+		
+			 System.out.println("Getting user status history...");
+			 String filex = MyIds.rootUser + "Hx.xml";
+		     String https_url = "https://twitter.com/statuses/user_timeline.xml?include_entities=true&include_rt=true&screen_name=" + MyIds.rootUser + "&count=100";
+		     makeConnection(https_url, filex);
+		     System.out.println("Finished downloading user status history.");
+		     
+		     File filename = new File(MyIds.hoopoeData + "/" + MyIds.rootUser + "Hx.xml");
+		     
+		     String check = HooUtil.nodeValue(filename, "status", "id", 0);
+		     System.out.println(check);
 	     
 	  }
 	

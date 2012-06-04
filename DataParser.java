@@ -5,6 +5,7 @@
 
 import java.util.*;
 import java.io.*;
+
 import javax.xml.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,7 +18,6 @@ import org.xml.sax.SAXException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 public class DataParser {
 
@@ -44,7 +44,7 @@ public class DataParser {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); 
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		
-		PrintWriter out = new PrintWriter(MyIds.myHome + "/Documents/HoopoeData/" +  MyIds.rootUser + "Status.csv");		
+		PrintWriter out = new PrintWriter(MyIds.hoopoeData+ "/" +  MyIds.rootUser + "Status.csv");		
 		String fileName = (MyIds.hoopoeData + "/" + MyIds.rootUser + "Hx.xml");
 		File f = new File(fileName);
 		Document doc = builder.parse(f);
@@ -84,8 +84,27 @@ public class DataParser {
 				
 	}
 	
+	public void ruserParse(ArrayList<String> uservals) throws ParserConfigurationException, SAXException, IOException{
+		PrintWriter out = new PrintWriter(MyIds.hoopoeData + "/" +  MyIds.rootUser + "Info.csv");
+        String userfile =  (MyIds.hoopoeData + "/" + MyIds.rootUser + "Info.xml");
+		ArrayList<String> ruvals = userParser(MyIds.rootUser, userfile);
+		
+			StringBuilder userStr = new StringBuilder();
+            for(String s : ruvals){
+            	userStr.append(s);
+            	userStr.append("\t");          			
+            }
+                  	
+       	 out.println(userStr.toString());
+       	 out.close();  
+	}
+            
+	public void friendParse(){
+		
+	}
+	
 	//method to parse user details 		
-		public void userParser(String usr, String userfile) throws ParserConfigurationException, SAXException, IOException{
+	public ArrayList<String> userParser(String usr, String userfile) throws ParserConfigurationException, SAXException, IOException{
 			System.out.println("Beginning user history parse...");
 			
 			ArrayList<String> tagNames = new ArrayList<String>();			
@@ -111,8 +130,7 @@ public class DataParser {
 			
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); 
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			
-			PrintWriter out = new PrintWriter(MyIds.myHome + "/Documents/HoopoeData/" +  usr + "Info.csv");		
+					
 			String fileName = (MyIds.hoopoeData + "/" + usr + userfile);
 			File f = new File(fileName);
 			Document doc = builder.parse(f);
@@ -121,32 +139,23 @@ public class DataParser {
 			//work within each status update; get the tags return the values
 			NodeList nodes = doc.getElementsByTagName("user");
 			int userCount = nodes.getLength();
+			ArrayList<String> userVals = null;
 					
 			        for (int i = 0; i< userCount; i++) {
 			        	Node userNode = nodes.item(i);
 			        	Element item = (Element) userNode;
 			        	
-			        	ArrayList<String> userVals = parseTags(tagNames, item);
+			        	userVals = parseTags(tagNames, item);
 			        	
 			        	//clean the user description
 			        	String clnDesc = HooUtil.perfText(userVals.get(4));
 			        	//return the user's description
 			        	userVals.set(4, clnDesc);
-			        
-			        
-						StringBuilder userStr = new StringBuilder();
-			            for(String s : userVals){
-			            	userStr.append(s);
-			            	userStr.append("\t");
+
 			            }
-			            
-			            out.println(userStr.toString());
-			        }
 			        
-				    out.close();
-			        System.out.println("User parse complete.");
-					
-		}
+					return userVals;			           
+	}
 
 	//parsing the friendship file into csv for loading
 	public void parseTempFF(){
@@ -210,7 +219,4 @@ public class DataParser {
 					return link;
 	}
 	
-
-		
-
 }
