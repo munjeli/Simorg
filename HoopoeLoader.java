@@ -2,6 +2,7 @@ import java.util.*;
 import java.io.*;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
 /*  Hoopoe is a utility I'm building to work with a data visualization 
@@ -29,7 +30,7 @@ public class HoopoeLoader {
 		MyIds.rootUser_id = user_id;
 	}
 	
-	public void userData(String rootUser) throws ParserConfigurationException, SAXException, IOException, InterruptedException{
+	public void userData(String rootUser) throws ParserConfigurationException, SAXException, IOException, InterruptedException, TransformerException{
 		
 		DataGrabber h = new DataGrabber();
 		//user status history from twitter

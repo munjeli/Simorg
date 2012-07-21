@@ -9,12 +9,26 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 
 
 //This class is for the queries to twitter's servers
@@ -28,30 +42,48 @@ public class DataGrabber {
  * user. 
  */
 	File destFile;
-	int qcount;
+	int qcount = 0;
 	
-	public void getRuserHx() throws ParserConfigurationException, SAXException, IOException, InterruptedException{
+	public void getRuserHx() throws ParserConfigurationException, IOException, InterruptedException, SAXException {
 			int downNodes = 0;
-			Integer statTot = 1;
-			String maxId = "3000000000";
+			Integer statTot = 10;
+			String maxId = null;
 			
-			while(downNodes < statTot){
-			 System.out.println("Getting user status history...");
-			 String filex = MyIds.rootUser + "Hx.xml";
-		     String https_url = "https://twitter.com/statuses/user_timeline.xml?screen_name=" + MyIds.rootUser + "&count=300";
-		     makeConnection(https_url, filex);
-		     System.out.println("Finished downloading user status history.");
-		     
-		     //set up for the loop		
-		     File filename = new File(MyIds.hoopoeData + "/" + MyIds.rootUser + "Hx.xml");		     
-		     downNodes = HooUtil.nodeCount(filename, "status");
-		     statTot = Integer.parseInt(HooUtil.nodeValue(filename, "user", "statuses_count", 0));
-		     
-		     Integer loopMax = (Integer.parseInt(HooUtil.nodeValue(filename, "status", "id", 0)) - 1);
-		     maxId = loopMax.toString();
-		     Thread.sleep(4000);
-		     
-		}
+		    File filename = new File(MyIds.hoopoeData + "/" + MyIds.rootUser + "Hx.xml");
+		    
+		    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); 
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document doc;
+
+		    
+		    	//loop and download based on the id of the last tweet
+				while(downNodes < statTot){
+				 System.out.println("Getting user status history...");
+				 String filex = MyIds.rootUser + "Hx.xml";
+			     String https_url = "https://twitter.com/statuses/user_timeline.xml?screen_name=" + MyIds.rootUser + "&count=300";
+			     makeConnection(https_url, filex);
+			     
+			     //validate the xml before you parse
+			     doc = builder.parse(filename);	
+			     doc.getDocumentElement().normalize();
+			     
+			     //set up for the loop		     
+			     downNodes = HooUtil.nodeCount(filename, "status");
+			     statTot = Integer.parseInt(HooUtil.nodeValue(filename, "user", "statuses_count", 0));
+			     
+			     Long loopMax = (Long.valueOf(HooUtil.nodeValue(filename, "status", "id", downNodes - 1)) - 1);
+			     maxId = loopMax.toString();
+			     https_url = "https://twitter.com/statuses/user_timeline.xml?screen_name=" + MyIds.rootUser + "&count=300&max_id=" + maxId;
+			     Thread.sleep(4000);
+			     qcount ++;
+				}
+				
+			Long topId = Long.valueOf(HooUtil.nodeValue(filename, "status", "id", 0));
+			if(downNodes != statTot){
+				//get the top of the list with a since query
+			}
+			
+			System.out.println("Finished downloading user status history.");
 	     
 	  }
 	
@@ -120,6 +152,7 @@ public class DataGrabber {
 
 	//this method prints the incoming streams to xml temp files for parsing
 	private void print_content(HttpsURLConnection con, String filex){
+		
 		if(con!=null){
 		
 			try {			
@@ -127,9 +160,9 @@ public class DataGrabber {
 				  
 			      destFile = new File("/" + filex);
 			      PrintWriter out = new PrintWriter(new FileWriter(MyIds.hoopoeData + destFile, true));	
-			   	  String input;		
+			   	  String input;
 				  while ((input = br.readLine()) != null){
-				  out.println(input);
+			      out.println(input);
 			}
 				
 			   out.flush();
